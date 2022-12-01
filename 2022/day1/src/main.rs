@@ -19,7 +19,9 @@ fn main() {
     results.sort();
     results.reverse();
 
-    let result: i32 = results.iter().take(3).sum();
+    let result_1: i32 = results[0];
+    let result_2: i32 = results.iter().take(3).sum();
 
-    println!("{}", result);
+    println!("{}", result_1);
+    println!("{}", result_2);
 }
