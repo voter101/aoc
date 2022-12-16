@@ -176,12 +176,26 @@ fn highest_output_with_elephant(
     flows: &HashMap<String, i32>,
     neighbours_map: &HashMap<String, HashMap<String, i32>>,
     opened_valves: &HashSet<String>,
+    cache: &mut HashMap<(String, String, i32, i32), i32>,
 ) -> i32 {
     if (remaining_time_me <= 2 && remaining_time_elephant <= 2)
         || opened_valves.len() == neighbours_map.len()
     {
         return current_flow;
     }
+
+    let cache_key = (
+        vertex_me.clone(),
+        vertex_elephant.clone(),
+        remaining_time_me,
+        remaining_time_elephant,
+    );
+    if let Some(value) = cache.get(&cache_key) {
+        if *value >= current_flow {
+            return current_flow;
+        }
+    }
+    cache.insert(cache_key, current_flow);
 
     let neighbours_me = neighbours_map
         .get(vertex_me)
@@ -210,7 +224,6 @@ fn highest_output_with_elephant(
     for (&n, &path) in &neighbours_elephant {
         let mut opened_valves_new: HashSet<String> = opened_valves.clone();
         opened_valves_new.insert(n.clone());
-
         let time_after_open = remaining_time_elephant - path - 1;
         let flow = if time_after_open > 0 {
             time_after_open * flows.get(n).unwrap()
@@ -227,13 +240,13 @@ fn highest_output_with_elephant(
             flows,
             neighbours_map,
             &opened_valves_new,
+            cache,
         ));
     }
 
     for (&n, &path) in &neighbours_me {
         let mut opened_valves_new: HashSet<String> = opened_valves.clone();
         opened_valves_new.insert(n.clone());
-
         let time_after_open = remaining_time_me - path - 1;
         let flow = if time_after_open > 0 {
             time_after_open * flows.get(n).unwrap()
@@ -250,6 +263,7 @@ fn highest_output_with_elephant(
             flows,
             neighbours_map,
             &opened_valves_new,
+            cache,
         ));
     }
 
@@ -260,7 +274,7 @@ fn main() {
     let input = fs::read_to_string("./input.txt").expect("File not loaded");
     let (flows, neighbours_map) = parse_input(&input);
     let meaningful_flows = meaningful_clique(&flows, &neighbours_map);
-    let opened_values = HashSet::<String>::new();
+    let mut opened_values = HashSet::<String>::new();
 
     let max_flow = highest_output(
         &String::from("AA"),
@@ -270,6 +284,13 @@ fn main() {
         &meaningful_flows,
         &opened_values,
     );
+    println!("{:?}", max_flow);
+
+    // I do the iteration step a bit differently for part 2, filling the
+    // `opened_values` before stepping into recursive function. There is also a
+    // cache that removes lots of repetetive calculations.
+    opened_values.insert(String::from("AA"));
+    let mut cache: HashMap<(String, String, i32, i32), i32> = HashMap::new();
 
     let max_flow_elephant = highest_output_with_elephant(
         &String::from("AA"),
@@ -280,8 +301,8 @@ fn main() {
         &flows,
         &meaningful_flows,
         &opened_values,
+        &mut cache,
     );
 
-    println!("{:?}", max_flow);
     println!("{:?}", max_flow_elephant);
 }
