@@ -135,7 +135,11 @@ fn simulate_board(to_drop: u64, directions: &Vec<Direction>) -> u64 {
         //       There _might_ be some inputs where this WON'T work. But we can increase 50 until we
         //       get "stable" enough.
         // Idea: Maybe `directions.len() * 2`?
-        let last_rows_val = ((board_dim.1 - 50)..board_dim.1)
+        let last_rows_val = ((if board_dim.1 >= 50 {
+            board_dim.1 - 50
+        } else {
+            0
+        })..board_dim.1)
             .into_iter()
             .map(|y| {
                 (0..=board_dim.0)
@@ -169,8 +173,8 @@ fn simulate_board(to_drop: u64, directions: &Vec<Direction>) -> u64 {
 }
 
 fn main() {
-    let input = fs::read_to_string("./input.txt").expect("File not loaded");
+    let input = fs::read_to_string("./input2.txt").expect("File not loaded");
     let directions = parse_input(&input);
     println!("{}", simulate_board(2022, &directions));
-    println!("{}", simulate_board(1000000000000, &directions))
+    //println!("{}", simulate_board(1000000000000, &directions))
 }
