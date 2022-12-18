@@ -173,8 +173,8 @@ fn simulate_board(to_drop: u64, directions: &Vec<Direction>) -> u64 {
 }
 
 fn main() {
-    let input = fs::read_to_string("./input2.txt").expect("File not loaded");
+    let input = fs::read_to_string("./input.txt").expect("File not loaded");
     let directions = parse_input(&input);
     println!("{}", simulate_board(2022, &directions));
-    //println!("{}", simulate_board(1000000000000, &directions))
+    println!("{}", simulate_board(1000000000000, &directions))
 }
