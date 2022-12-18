@@ -184,18 +184,18 @@ fn highest_output_with_elephant(
         return current_flow;
     }
 
-    let cache_key = (
-        vertex_me.clone(),
-        vertex_elephant.clone(),
-        remaining_time_me,
-        remaining_time_elephant,
-    );
-    if let Some(value) = cache.get(&cache_key) {
-        if *value >= current_flow {
-            return current_flow;
-        }
-    }
-    cache.insert(cache_key, current_flow);
+    // let cache_key = (
+    //     vertex_me.clone(),
+    //     vertex_elephant.clone(),
+    //     remaining_time_me,
+    //     remaining_time_elephant,
+    // );
+    // if let Some(value) = cache.get(&cache_key) {
+    //     if *value >= current_flow {
+    //         return current_flow;
+    //     }
+    // }
+    // cache.insert(cache_key, current_flow);
 
     let neighbours_me = neighbours_map
         .get(vertex_me)
