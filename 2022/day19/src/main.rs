@@ -1,13 +1,13 @@
 use std::fs;
 use text_io::scan;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 struct ResourcesState(usize, usize, usize, usize);
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Eq, Hash, PartialEq)]
 struct BuildingsState(usize, usize, usize, usize);
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 struct StructureCost(usize, usize, usize);
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 struct Blueprint(StructureCost, StructureCost, StructureCost, StructureCost);
 
 fn parse_input(input: &String) -> Vec<Blueprint> {
