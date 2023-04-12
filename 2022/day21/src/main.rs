@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::str;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 enum Operator {
     Add,
     Sub,
@@ -14,7 +14,7 @@ enum Operator {
     Div,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 enum Monke {
     Number(i64),
     Operation {
