@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::str;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 enum Operator {
     Add,
     Sub,
@@ -14,7 +14,7 @@ enum Operator {
     Div,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 enum Monke {
     Number(i64),
     Operation {
@@ -42,6 +42,78 @@ fn solve(monkes: &HashMap<String, Monke>, monke: String) -> i64 {
             }
         }
     }
+}
+
+fn solve_2(monkes: &HashMap<String, Monke>) -> i64 {
+    let mut current_human = 1;
+    let flip_sign = if diff_for_given_human(monkes, current_human) > 1 {
+        -1
+    } else {
+        1
+    };
+
+    loop {
+        let current_diff = diff_for_given_human(monkes, current_human) * flip_sign;
+
+        if current_diff == 0 {
+            return current_human;
+        }
+
+        let next_diff = diff_for_given_human(monkes, current_human * 2) * flip_sign;
+
+        if next_diff > 0 {
+            // We found the bounds. Binary search inside it
+            let mut low = current_human;
+            let mut high = current_human * 2;
+
+            while low <= high {
+                let middle = (((high + low) / 2) as f64).floor() as i64;
+
+                let middle_diff = diff_for_given_human(monkes, middle) * flip_sign;
+
+                if middle_diff == 0 {
+                    // Sometimes many numbers can give the same solution (thanks to division)
+                    for h in low..middle {
+                        if diff_for_given_human(monkes, h) == 0 {
+                            return h;
+                        }
+                    }
+                    return middle;
+                } else if middle_diff > 0 {
+                    high = middle;
+                } else {
+                    low = middle;
+                }
+            }
+        } else {
+            current_human *= 2;
+        }
+    }
+}
+
+fn diff_for_given_human(monkes: &HashMap<String, Monke>, human: i64) -> i64 {
+    let (left, right) = match monkes.get_key_value("root").unwrap().1 {
+        Monke::Number(_) => unreachable!(),
+        Monke::Operation { left, right, .. } => (left, right),
+    };
+
+    let mut monkes_temp: HashMap<String, Monke> = HashMap::new();
+    monkes_temp.extend(monkes.into_iter().map(|(k, v)| {
+        (
+            k.clone(),
+            if k == "humn" {
+                Monke::Number(human)
+            } else {
+                v.clone()
+            },
+        )
+    }));
+
+    get_difference(&monkes_temp, left.clone(), right.clone())
+}
+
+fn get_difference(monkes: &HashMap<String, Monke>, key1: String, key2: String) -> i64 {
+    solve(&monkes, key1.clone()) - solve(&monkes, key2.clone())
 }
 
 fn parse_line(line: &str) -> IResult<&str, (String, Monke)> {
@@ -88,7 +160,6 @@ fn main() {
         })
         .collect::<HashMap<String, Monke>>();
 
-    let result = solve(&monkes, String::from("root"));
-
-    println!("{}", result);
+    println!("{}", solve(&monkes, String::from("root")));
+    println!("{}", solve_2(&monkes));
 }
