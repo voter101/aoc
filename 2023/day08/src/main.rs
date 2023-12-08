@@ -102,8 +102,6 @@ fn path_to_simultenaous_length(
         }
     }
 
-    println!("{:?}", paths.iter().map(|p| p.1).collect::<Vec<u64>>());
-
     paths.iter().map(|p| p.1).fold(1, |acc, x| lcm(acc, x))
 }
 
