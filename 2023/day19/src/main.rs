@@ -245,7 +245,6 @@ fn acceptable_ranges(rules: &Rules) -> usize {
 
     solutions
         .iter()
-        .filter(|(x, m, a, s)| x.0 < x.1 && m.0 < m.1 && a.0 < a.1 && s.0 < s.1)
         .map(|((x1, x2), (m1, m2), (a1, a2), (s1, s2))| {
             (x2 - x1 + 1) * (m2 - m1 + 1) * (a2 - a1 + 1) * (s2 - s1 + 1)
         })
