@@ -1,28 +1,30 @@
 use std::collections::HashMap;
 use std::fs;
 
-fn parse_input(input: String) -> HashMap<String, usize> {
+fn parse_input(input: String) -> HashMap<usize, usize> {
     let mut res = HashMap::new();
     input
         .split_whitespace()
-        .for_each(|x| *res.entry(x.to_string()).or_default() += 1);
+        .for_each(|x| *res.entry(x.parse::<usize>().unwrap()).or_default() += 1);
 
     res
 }
 
-fn blink(stones: HashMap<String, usize>) -> HashMap<String, usize> {
+fn blink(stones: HashMap<usize, usize>) -> HashMap<usize, usize> {
     let mut res = HashMap::new();
     for (k, v) in stones.clone() {
-        if k == "0" {
-            *res.entry("1".to_string()).or_default() += v;
-        } else if k.len() % 2 == 0 {
-            let a = (&k[0..k.len() / 2]).parse::<usize>().unwrap().to_string();
-            let b = (&k[k.len() / 2..]).parse::<usize>().unwrap().to_string();
-            *res.entry(a).or_default() += v;
-            *res.entry(b).or_default() += v;
+        if k == 0 {
+            *res.entry(1).or_default() += v;
         } else {
-            let num = (k.parse::<usize>().unwrap() * 2024).to_string();
-            *res.entry(num.clone()).or_default() += v;
+            let num = k.to_string();
+            if num.len() % 2 == 0 {
+                let a = (&num[0..num.len() / 2]).parse::<usize>().unwrap();
+                let b = (&num[num.len() / 2..]).parse::<usize>().unwrap();
+                *res.entry(a).or_default() += v;
+                *res.entry(b).or_default() += v;
+            } else {
+                *res.entry(k * 2024).or_default() += v;
+            }
         }
     }
 
