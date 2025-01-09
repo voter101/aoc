@@ -8,7 +8,7 @@ fn iterate_secret(
     let mut res = input;
     let mut seen: HashMap<(isize, isize, isize, isize), usize> = HashMap::new();
 
-    let mut last_price = input;
+    let mut last_price = price(input);
     let mut last_prices_diffs: Vec<isize> = vec![];
 
     for i in 0..iters {
@@ -18,14 +18,14 @@ fn iterate_secret(
 
         last_prices_diffs.push(diff);
 
-        if i >= 4 {
-            last_prices_diffs.remove(0);
+        if i >= 3 {
             let seen_key = (
                 last_prices_diffs[0],
                 last_prices_diffs[1],
                 last_prices_diffs[2],
                 last_prices_diffs[3],
             );
+            last_prices_diffs.remove(0);
 
             if !seen.contains_key(&seen_key) {
                 seen.insert(seen_key, next_price);
