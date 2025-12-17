@@ -4,7 +4,7 @@ type Point = (isize, isize);
 
 #[derive(Eq, PartialEq, Ord, Copy, Clone)]
 struct Rectangle {
-    points: [Point; 2],
+    points: (Point, Point),
     area: usize,
 }
 
@@ -56,8 +56,13 @@ fn construct_areas(points: &Vec<Point>) -> BinaryHeap<Rectangle> {
         for j in (i + 1)..points.len() {
             let area = (((points[i].0 - points[j].0).abs() + 1)
                 * ((points[i].1 - points[j].1).abs() + 1)) as usize;
+            let a_p_1 = points[i];
+            let a_p_2 = points[j];
+
+            let p_1 = (a_p_1.0.min(a_p_2.0), a_p_1.1.min(a_p_2.1));
+            let p_2 = (a_p_1.0.max(a_p_2.0), a_p_1.1.max(a_p_2.1));
             areas.push(Rectangle {
-                points: [points[i], points[j]],
+                points: (p_1, p_2),
                 area,
             })
         }
@@ -95,17 +100,10 @@ fn main() {
 
     let (h_boundaries, v_boundaries) = to_segments(&points);
 
-    loop {
-        let area = areas.pop().unwrap();
-        let a_p_1 = &area.points[0];
-        let a_p_2 = &area.points[1];
-
-        let p_1 = (a_p_1.0.min(a_p_2.0), a_p_1.1.min(a_p_2.1));
-        let p_2 = (a_p_1.0.max(a_p_2.0), a_p_1.1.max(a_p_2.1));
-
-        if rectangle_inside_boundaries(&p_1, &p_2, &h_boundaries, &v_boundaries) {
-            println!("{}", area.area);
-            break;
-        }
+    let mut area = areas.pop().unwrap();
+    while !rectangle_inside_boundaries(&area.points.0, &area.points.1, &h_boundaries, &v_boundaries)
+    {
+        area = areas.pop().unwrap();
     }
+    println!("{}", area.area);
 }
